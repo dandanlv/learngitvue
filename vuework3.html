@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #tb{
+            width: 800px;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        #tb th{
+            background-color: #0094ff;
+            color: #fff;
+            font-size: 16px;
+            padding: 5px;
+            text-align: center;
+            border: 1px solid black;
+        }
+        #tb td{
+            padding: 5px;
+            text-align: center;
+            border: 1px solid black;
+        }
+        a:link{
+            text-decoration: none;
+        }
+        a:visited{
+            text-decoration: none;
+        }
+        a:hover{
+            text-decoration: none;
+        }
+        a:active{
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <input type="text" v-model="id">
+    <input type="text" v-model="pname" v-on:keydown.enter="addData">
+    <button v-on:click="addData">添加数据</button>
+    <br/>
+    <my-red>搜索条件：</my-red>
+    <input type="text" v-focus v-color="color1" placeholder="请输入筛选内容" v-model="sname"/>
+    <table id="tb">
+        <tr>
+            <th>编号</th>
+            <th>名称</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </tr>
+        <tr v-show="list.length==0">
+            <td colspan="4">当前列表没有任何数据</td>
+        </tr>
+        <tr v-for="item in list |filterBy sname in'name'">
+            <td>{{item.id}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.ctime |datefmt'yyyy-mm-dd'}}</td>
+            <td>
+                <a href="#" v-on:click="delData(item.id)">删除</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<!--<script src="js/vue221.js"></script>-->
+<script src="js/vue1026.js"></script>
+<script type="text/javascript " charset="utf-8">
+    Vue.directive('focus',function(){
+        var inputObj=this.el;
+        inputObj.focus();
+    });
+    Vue.directive('color',{bind:function(){
+//        console.log(this.vm.color1);
+//        console.log(this.expression);
+        this.el.style.color=this.vm[this.expression];
+    }});
+    Vue.elementDirective('my-red',{
+        bind:function(){
+            this.el.style.color='red'
+        }
+    })
+Vue.filter('datefmt',function(input,formatstring){
+    var res='';
+    var year=input.getFullYear();
+    var month=input.getMonth()+1;
+    var day=input.getDate();
+    if(formatstring=='yyyy-mm-dd'){
+        res=year+'-'+month+'-'+day;
+    }else{
+        res=year+'-'+month+'-'+day+'03:09:18';
+    }
+    return res;
+})
+
+   var vm=new Vue({
+       el:'#app',
+       data:{
+           color1:'red',
+        list:[
+            {id:1,name:'奔驰',ctime:new Date},
+            {id:2,name:'长安奔奔',ctime:new Date},
+            {id:3,name:'宝马',ctime:new Date}
+        ],
+           id:0,
+           pname:'',
+           sname:''
+
+       },
+       methods:{
+           addData:function(){
+               var p={id:this.id,name:this.pname,ctime:new Date()};
+               this.list.push(p);
+               this.id=0;
+               this.pname='';
+           },
+           delData:function(id){
+                if(!confirm('是否要删除数据？')){
+                    return
+                }
+               var index=this.list.findIndex(function(item){
+                   return item.id==id
+               });
+                this.list.splice(index,1);
+           }
+       }
+
+   })
+</script>
+
+
+
+
+
+
+
+
+</body>
+</html>
